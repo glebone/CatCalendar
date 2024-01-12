@@ -10,15 +10,45 @@ import WeatherKit
 import CoreLocation
 
 struct ContentView: View {
+    
+    @State private var isFlipped = false
+    @State private var flipDegrees = 0.0
+    @State private var mainDate: Date = Date()
+       
+    var body: some View {
+           VStack {
+               ZStack {
+                   FrontSideView(mainDate: $mainDate)
+                       .opacity(isFlipped ? 0 : 1)
+                   
+                   BackSideView(mainDate: $mainDate)
+                       .opacity(isFlipped ? 1 : 0)
+                       .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+               }
+               .rotation3DEffect(.degrees(flipDegrees), axis: (x: 0, y: 1, z: 0))
+               .onTapGesture {
+                   withAnimation {
+                       flipDegrees += 180
+                       isFlipped.toggle()
+                   }
+               }
+           }
+       }
+   
+}
+
+struct FrontSideView: View {
     @State private var sunriseTime = ""
     @State private var sunsetTime = ""
     @State private var moonPhase = ""
     @State private var itEvents: String = ""
     @State private var currentDate = Date()
+    @Binding var mainDate: Date
+    
     
     var body: some View {
 
-        VStack {
+         VStack {
             // Row for the day number
             Text(Date().year())
                 .padding(.top)
@@ -66,11 +96,9 @@ struct ContentView: View {
             .padding()
             HStack {
                 Text(Image(systemName: "moon"))
-                Text(calculateMoonPhase(for: Date())) 
+                Text(calculateMoonPhase(for: Date()))
             }
                
-          
-            
             ScrollView {
                 Text(itEvents)
                     .padding()
@@ -91,7 +119,6 @@ struct ContentView: View {
         
         .onAppear {
             // Replace with actual latitude and longitude
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
           
             self.updateViewForDate()
         }
@@ -103,6 +130,7 @@ struct ContentView: View {
         print("%%%%%%%%%%%%%%")
         if let newDate = Calendar.current.date(byAdding: .day, value: days, to: currentDate) {
             currentDate = newDate
+            mainDate = newDate
             updateViewForDate()
         }
     }
@@ -145,6 +173,27 @@ struct ContentView: View {
         
         return formatter.string(from: date)
     }
+    
+    
+    
+    
+    
 }
 
+struct BackSideView: View {
+    @Binding var mainDate: Date
+    var body: some View {
+        VStack {
+            Text("\(mainDate)")
+            Text("sdfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf")
+            Text("Back Side")
+            Text("Tap to flip")
+        }
+    }
+}
 
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
