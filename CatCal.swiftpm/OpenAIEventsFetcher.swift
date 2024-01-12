@@ -2,7 +2,7 @@ import Foundation
 
 import Foundation
 
-func fetchOpenAIResponse(completion: @escaping (String) -> Void) {
+func fetchOpenAIResponse(cdate: Date, completion: @escaping (String) -> Void) {
     let url = URL(string: "https://api.openai.com/v1/chat/completions")!
     var request = URLRequest(url: url)
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -11,9 +11,9 @@ func fetchOpenAIResponse(completion: @escaping (String) -> Void) {
     
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "MMMM dd"
-    let currentDate = dateFormatter.string(from: Date())
+    let currentDate = dateFormatter.string(from: cdate)
     
-    let prompt = "This day, \(currentDate) in tech during years, give me 3 facts"
+    let prompt = "This day, \(currentDate) in tech during years, give me 3 facts,add how many years ago after the actual date"
     
     print(prompt)
     

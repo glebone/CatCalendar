@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var sunsetTime = ""
     @State private var moonPhase = ""
     @State private var itEvents: String = ""
+    @State private var currentDate = Date()
     
     var body: some View {
 
@@ -23,17 +24,30 @@ struct ContentView: View {
                 .padding(.top)
                 .font(.title)
             HStack {
-                Text("\(Date().monthName()), ")
+                Text("\(currentDate.monthName()), ")
                     .font(.title)
-                Text(Date().weekdayName())
+                Text(currentDate.weekdayName())
                     .font(.title)
-                    .foregroundColor(Date().isWeekend() ? .red : .primary)
+                    .foregroundColor(currentDate.isWeekend() ? .red : .primary)
             }
-            Text("\(Calendar.current.component(.day, from: Date()))")
-                .font(.system(size: 60, weight: .bold)) // Large, bold font
-                .foregroundColor(Date().isWeekend() ? .red : .primary)
-                .padding()
-            
+            HStack {
+                Button(action: {
+                    self.changeDate(by: -1)
+                }) {
+                    Image(systemName: "arrow.left")
+                }
+                
+                Text("\(Calendar.current.component(.day, from: currentDate))")
+                    .font(.system(size: 60, weight: .bold))
+                    .foregroundColor(currentDate.isWeekend() ? .red : .primary)
+                
+                Button(action: {
+                    self.changeDate(by: 1)
+                }) {
+                    Image(systemName: "arrow.right")
+                }
+            }
+            .padding()
             // Row for the sunrise and sunset times
             HStack {
                 VStack {
@@ -73,25 +87,43 @@ struct ContentView: View {
 
         )
         
+        
+        
         .onAppear {
             // Replace with actual latitude and longitude
-            fetchSunData(latitude: 49.4413, longitude: 32.0643) { sunTimes in
-                if let sunTimes = sunTimes {
-                    DispatchQueue.main.async {
-                        print(sunTimes.sunrise)
-                        sunriseTime = formatTime(isoDate: sunTimes.sunrise)
-                        sunsetTime = formatTime(isoDate: sunTimes.sunset)
-                    }
-                }
-            }
-            
-            fetchOpenAIResponse { eventsText in
-                itEvents = eventsText
-            }
-            
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+          
+            self.updateViewForDate()
         }
         
         
+    }
+    
+    private func changeDate(by days: Int) {
+        print("%%%%%%%%%%%%%%")
+        if let newDate = Calendar.current.date(byAdding: .day, value: days, to: currentDate) {
+            currentDate = newDate
+            updateViewForDate()
+        }
+    }
+    
+    private func updateViewForDate() {
+        print("ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ")
+        fetchSunData(latitude: 49.4413, longitude: 32.0643, cdate: currentDate) { sunTimes in
+            if let sunTimes = sunTimes {
+                DispatchQueue.main.async {
+                    print(sunTimes.sunrise)
+                    sunriseTime = formatTime(isoDate: sunTimes.sunrise)
+                    sunsetTime = formatTime(isoDate: sunTimes.sunset)
+                }
+            }
+        }
+        
+        fetchOpenAIResponse(cdate: currentDate) { eventsText in
+            itEvents = eventsText
+        }
+        // Update your view based on the new date
+        // For example, recalculate sunrise and sunset times
     }
     
     private func formatTime(isoDate: String) -> String {
