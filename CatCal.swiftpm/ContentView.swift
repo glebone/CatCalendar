@@ -95,7 +95,8 @@ struct FrontSideView: View {
             }
             .padding()
             HStack {
-                Text(Image(systemName: "moon"))
+                
+                Text(getMoonImage(phase: calculateMoonPhase(for: Date())))
                 Text(calculateMoonPhase(for: Date()))
             }
                

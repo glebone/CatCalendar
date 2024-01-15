@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 func calculateMoonPhase(for date: Date) -> String {
     let referenceNewMoonDate = Calendar.current.date(from: DateComponents(year: 2000, month: 1, day: 6))!
@@ -10,6 +11,7 @@ func calculateMoonPhase(for date: Date) -> String {
     
     let lunations = daysSinceNewMoon / lunarCycle
     let positionInCycle = lunations.truncatingRemainder(dividingBy: 1) * lunarCycle
+    
     
     // Determine moon phase based on position in lunar cycle
     switch positionInCycle {
@@ -32,6 +34,32 @@ func calculateMoonPhase(for date: Date) -> String {
     default:
         return "New Moon"
     }
+}
+
+func getMoonImage(phase: String) -> Image {
+    
+    switch phase {
+    case "New Moon":
+       return  Image(systemName: "moonphase.new.moon")
+    case "Waxing Crescent":
+       return Image(systemName: "moonphase.waxing.crescent")
+    case "First Quarter":
+       return Image(systemName: "moonphase.first.quarter")
+    case "Waxing Gibbous":
+       return Image(systemName: "moonphase.waxing.gibbous")
+    case "Full Moon":
+      return Image(systemName: "moonphase.full.moon")
+    case "Waning Gibbous":
+      return Image(systemName: "moonphase.waning.gibbous")
+    case "Last Quarter":
+      return Image(systemName: "moonphase.last.quarter")
+    case "Waning Crescent":
+      return Image(systemName: "moonphase.waning.crescent")
+    default:
+      return Image(systemName: "moon.stars.fill")
+        
+    }
+    
 }
 
 // Example usage
