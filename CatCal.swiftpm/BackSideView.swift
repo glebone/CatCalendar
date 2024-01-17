@@ -54,9 +54,39 @@ struct BackSideView: View {
 
 class CanvasViewModel: ObservableObject {
     let canvasView = PKCanvasView()
+    init() {
+        // Create a dark navy color
+        let darkNavyColor = UIColor(red: 0.0, green: 0.0, blue: 0.5, alpha: 1.0) // Adjust RGB values as needed
+        
+        // Set the default tool as a pencil with the dark navy color
+        let pencil = PKInkingTool(.pencil, color: darkNavyColor, width: 2) // Adjust width as needed
+        canvasView.tool = pencil
+        loadDrawing()
+    }
+    func loadDrawing() {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsDirectory.appendingPathComponent("savedDrawing.data")
+        
+        if let drawingData = try? Data(contentsOf: fileURL),
+           let drawing = try? PKDrawing(data: drawingData) {
+            canvasView.drawing = drawing
+        }
+    }
+
     func saveImage(named name: String) {
-        // Functionality to capture canvas content and save to disk
-        // ...
+        let drawingData = canvasView.drawing.dataRepresentation()
+        
+        // Define the URL for saving the file
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsDirectory.appendingPathComponent("savedDrawing.data")
+        
+        // Write the data to the file
+        do {
+            try drawingData.write(to: fileURL)
+        } catch {
+            print("Unable to save drawing:", error.localizedDescription)
+        }
+    
     }
     
     
