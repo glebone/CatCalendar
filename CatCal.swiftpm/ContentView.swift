@@ -81,13 +81,26 @@ struct FrontSideView: View {
             // Row for the sunrise and sunset times
             HStack {
                 VStack {
-                    Text(Image(systemName: "sunrise"))
+                    Image(systemName: "sunrise")
                     Text(sunriseTime)
                         .font(.title)
                 }
-                Spacer()
+                
+                Spacer() // Spacer for pushing content to the edges
+                
+                // VStack for Calendar Icon (Centered)
                 VStack {
-                    Text(Image(systemName: "sunset"))
+                    if Calendar.current.isDateInToday(mainDate) {
+                        Image(systemName: "calendar.badge.checkmark.rtl")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                
+                Spacer() // Another Spacer
+                
+                // VStack for Sunset
+                VStack {
+                    Image(systemName: "sunset")
                         .font(.headline)
                     Text(sunsetTime)
                         .font(.title)
