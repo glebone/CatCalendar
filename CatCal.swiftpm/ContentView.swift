@@ -181,17 +181,7 @@ struct FrontSideView: View {
     
 }
 
-struct BackSideView: View {
-    @Binding var mainDate: Date
-    var body: some View {
-        VStack {
-            Text("\(mainDate)")
-            Text("sdfsfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdf")
-            Text("Back Side")
-            Text("Tap to flip")
-        }
-    }
-}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
