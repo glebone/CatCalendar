@@ -90,10 +90,23 @@ struct FrontSideView: View {
                 
                 // VStack for Calendar Icon (Centered)
                 VStack {
-                    if Calendar.current.isDateInToday(mainDate) {
-                        Image(systemName: "calendar.badge.checkmark.rtl")
-                            .frame(maxWidth: .infinity)
-                    }
+                
+                    HStack {
+                                           // Calendar Icon (Shown if it's today's date)
+                                           if Calendar.current.isDateInToday(mainDate) {
+                                               Image(systemName: "calendar.badge.checkmark.rtl")
+                                           }
+
+                                           // Drawing Icon (Shown if there is a drawing file for the date)
+                                           if doesDrawingExist(for: mainDate) {
+                                               Image(systemName: "square.and.pencil")
+                                           }
+                                       }
+                                       .frame(maxWidth: .infinity)
+                    
+                    
+                    
+                    
                 }
                 
                 Spacer() // Another Spacer
@@ -139,6 +152,23 @@ struct FrontSideView: View {
         
         
     }
+    
+    
+    func doesDrawingExist(for date: Date) -> Bool {
+        let formattedDate = formattedDateString(from: date)
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsDirectory.appendingPathComponent("\(formattedDate).data")
+
+        return FileManager.default.fileExists(atPath: fileURL.path)
+    }
+    
+    func formattedDateString(from date: Date) -> String {
+           let formatter = DateFormatter()
+           formatter.dateFormat = "yyyyMMdd"
+           return formatter.string(from: date)
+       }
+
+    
     
     private func changeDate(by days: Int) {
         print("%%%%%%%%%%%%%%")
