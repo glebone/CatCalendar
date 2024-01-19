@@ -40,25 +40,23 @@
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.gray, lineWidth: 1)
                     )
-                    .overlay(saveButton, alignment: .topTrailing)
+                    .overlay(
+                                       DrawingButtonsView(
+                                           onSave: { canvasViewModel.saveImage(named: mainDate.formatted()) },
+                                           onDelete: { canvasViewModel.deleteDrawing() }
+                                       ),
+                                       alignment: .topTrailing
+                                   )
 
             }
               .background(Color(red: 0.98, green: 0.95, blue: 0.90))
+              .onChange(of: mainDate) { oldValue, newValue in
+                             canvasViewModel.updateDate(newValue)
+                         }
             
         }
 
-        var saveButton: some View {
-            Button(action: {
-                canvasViewModel.saveImage(named: mainDate.formatted())
-            }) {
-                Image(systemName: "square.and.arrow.down")
-                    .padding()
-                    .background(Color.white)
-                    .clipShape(Circle())
-                    .shadow(radius: 10)
-            }
-            .padding()
-        }
+     
     }
 
     class CanvasViewModel: ObservableObject {
@@ -75,6 +73,30 @@
             loadDrawing()
         }
         
+        func updateDate(_ newDate: Date) {
+               mainDate.wrappedValue = newDate
+               loadDrawing()
+           }
+        
+        func deleteDrawing() {
+            self.clearCanvas()
+               let formattedDate = formattedDateString(from: mainDate.wrappedValue)
+               let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+               let fileURL = documentsDirectory.appendingPathComponent("\(formattedDate).data")
+
+               do {
+                   if FileManager.default.fileExists(atPath: fileURL.path) {
+                       try FileManager.default.removeItem(at: fileURL)
+                       // You can use a published property for alert message or handling the deletion confirmation
+                       print("Drawing deleted successfully.")
+                   } else {
+                       print("No drawing file found to delete.")
+                   }
+               } catch {
+                   print("Error deleting drawing:", error.localizedDescription)
+               }
+           }
+        
         func clearCanvas() {
                canvasView.drawing = PKDrawing()
            }
@@ -85,6 +107,7 @@
                return formatter.string(from: date)
            }
         func loadDrawing() {
+            clearCanvas()
             let formattedDate = formattedDateString(from: mainDate.wrappedValue)
             let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let fileURL = documentsDirectory.appendingPathComponent("\(formattedDate).data")
@@ -111,7 +134,7 @@
                 print("Unable to save drawing:", error.localizedDescription)
             }
         }
-        
+         
         
     }
 
@@ -138,3 +161,28 @@
         func updateUIView(_ uiView: PKCanvasView, context: Context) {
         }
     }
+
+struct DrawingButtonsView: View {
+    var onSave: () -> Void
+    var onDelete: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(action: onSave) {
+                Image(systemName: "square.and.arrow.down")
+                    .padding()
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(radius: 10)
+            }
+
+            Button(action: onDelete) {
+                Image(systemName: "trash")
+                    .padding()
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(radius: 10)
+            }
+        }
+    }
+}
