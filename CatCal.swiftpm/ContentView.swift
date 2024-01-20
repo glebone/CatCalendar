@@ -122,8 +122,8 @@ struct FrontSideView: View {
             .padding()
             HStack {
                 
-                Text(getMoonImage(phase: calculateMoonPhase(for: Date())))
-                Text(calculateMoonPhase(for: Date()))
+                Text(getMoonImage(phase: calculateMoonPhase(for: mainDate)))
+                Text(calculateMoonPhase(for: mainDate))
             }
                
             ScrollView {
@@ -146,8 +146,8 @@ struct FrontSideView: View {
         
         .onAppear {
             // Replace with actual latitude and longitude
-          
             self.updateViewForDate()
+            print(self.isRunningOnCatalyst())
         }
         
         
@@ -167,11 +167,18 @@ struct FrontSideView: View {
            formatter.dateFormat = "yyyyMMdd"
            return formatter.string(from: date)
        }
+    
+    func isRunningOnCatalyst() -> Bool {
+        #if targetEnvironment(macCatalyst)
+            return true
+        #else 
+            return false
+        #endif
+    }
 
     
     
     private func changeDate(by days: Int) {
-        print("%%%%%%%%%%%%%%")
         if let newDate = Calendar.current.date(byAdding: .day, value: days, to: currentDate) {
             currentDate = newDate
             mainDate = newDate
@@ -180,7 +187,6 @@ struct FrontSideView: View {
     }
     
     private func updateViewForDate() {
-        print("ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ")
         fetchSunData(latitude: 49.4413, longitude: 32.0643, cdate: currentDate) { sunTimes in
             if let sunTimes = sunTimes {
                 DispatchQueue.main.async {
