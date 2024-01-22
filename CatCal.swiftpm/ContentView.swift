@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var isFlipped = false
     @State private var flipDegrees = 0.0
     @State private var mainDate: Date = Date()
+   
        
     var body: some View {
            VStack {
@@ -43,6 +44,7 @@ struct FrontSideView: View {
     @State private var moonPhase = ""
     @State private var itEvents: String = ""
     @State private var currentDate = Date()
+    @State private var showingDatePicker = false
     @Binding var mainDate: Date
     
     
@@ -67,9 +69,13 @@ struct FrontSideView: View {
                     Image(systemName: "arrow.left")
                 }
                 
-                Text("\(Calendar.current.component(.day, from: currentDate))")
-                    .font(.system(size: 60, weight: .bold))
-                    .foregroundColor(currentDate.isWeekend() ? .red : .primary)
+                Button(action: {
+                                   self.showingDatePicker.toggle()
+                               }) {
+                                   Text("\(Calendar.current.component(.day, from: currentDate))")
+                                       .font(.system(size: 60, weight: .bold))
+                                       .foregroundColor(currentDate.isWeekend() ? .red : .primary)
+                               }
                 
                 Button(action: {
                     self.changeDate(by: 1)
@@ -142,6 +148,26 @@ struct FrontSideView: View {
 
         )
         
+        .sheet(isPresented: $showingDatePicker) {
+            NavigationView {
+                DatePicker("Select a Date", selection: $currentDate, displayedComponents: .date)
+                    .datePickerStyle(GraphicalDatePickerStyle())
+                    .navigationTitle("Choose Date")
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") {
+                                self.showingDatePicker = false
+                            }
+                        }
+                    }
+                    .padding()
+                    .onDisappear {                                   // This closure is called when the NavigationView is about to disappear
+                        print("Selected date: \(currentDate)")
+                        self.mainDate = currentDate
+                }
+                    
+            }
+        }
         
         
         .onAppear {
