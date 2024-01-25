@@ -107,6 +107,10 @@ struct FrontSideView: View {
                                            if doesDrawingExist(for: mainDate) {
                                                Image(systemName: "square.and.pencil")
                                            }
+                                          if doesTextExist(for: mainDate) {
+                                              Image(systemName: "text.bubble")
+                            
+                                          }
                                        }
                                        .frame(maxWidth: .infinity)
                     
@@ -187,6 +191,12 @@ struct FrontSideView: View {
 
         return FileManager.default.fileExists(atPath: fileURL.path)
     }
+    
+    func doesTextExist(for date: Date) -> Bool {
+        let formattedDate = formattedDateString(from: date)
+        return UserDefaults.standard.object(forKey: formattedDate) != nil
+    }
+
     
     func formattedDateString(from date: Date) -> String {
            let formatter = DateFormatter()

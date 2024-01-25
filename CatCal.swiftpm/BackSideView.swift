@@ -13,22 +13,64 @@
             self._canvasViewModel = StateObject(wrappedValue: CanvasViewModel(date: mainDate))
             
           }
+        
+        func saveText(_ text: String) {
+               let key = formattedDateString(from: mainDate)
+               UserDefaults.standard.set(text, forKey: key)
+           }
+
+           func formattedDateString(from date: Date) -> String {
+               let formatter = DateFormatter()
+               formatter.dateFormat = "yyyyMMdd"
+               return formatter.string(from: date)
+           }
+        
+        
+        func loadText(for date: Date) {
+               let key = formattedDateString(from: date)
+               if let loadedText = UserDefaults.standard.string(forKey: key) {
+                   textInput = loadedText
+               } else {
+                   textInput = "" // Clear the text input if no entry for this date
+               }
+           }
 
         var body: some View {
             VStack {
-                // Upper part for multiline text input
-                TextEditor(text: $textInput)
-                    .frame(minHeight: 0, maxHeight: .infinity)
-                    .padding() // Padding around TextEditor
-                    .background(Color(red: 0.95, green: 0.95, blue: 0.95)) // Background color
-                    .cornerRadius(10) // Rounded corners
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
-                    .onTapGesture {
-                        print("text backside tapped")
-                    }
+                ZStack(alignment: .topTrailing) {
+                              TextEditor(text: $textInput)
+                                  .frame(minHeight: 0, maxHeight: .infinity)
+                                  .padding() // Padding around TextEditor
+                                  .background(Color(red: 0.95, green: 0.95, blue: 0.95)) // Background color
+                                  .cornerRadius(10) // Rounded corners
+                                  .overlay(
+                                      RoundedRectangle(cornerRadius: 10)
+                                          .stroke(Color.gray, lineWidth: 1)
+                                  )
+                                  .onTapGesture {
+                                      print("text backside tapped")
+                                  }
+
+                              // Save Button in the top right corner
+                              Button(action: { saveText(textInput) }) {
+                                  Image(systemName: "square.and.arrow.down")
+                                      .padding()
+                                      .background(Color.white)
+                                      .clipShape(Circle())
+                                      .shadow(radius: 10)
+                              }
+                              .padding() // Add padding to position the button correctly
+                              .onChange(of: mainDate) { oldValue, newDate in
+                                        loadText(for: newDate)
+                                    }
+                              .onAppear() {
+                                  loadText(for: mainDate)
+                              }
+                          }
+
+                          // Lower part for PencilKit canvas...
+                     
+                    
 
                 // Lower part for PencilKit canvas
                 PencilKitView(canvasViewModel: canvasViewModel)
