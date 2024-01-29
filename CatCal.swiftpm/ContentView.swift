@@ -47,6 +47,7 @@ struct FrontSideView: View {
     @State private var sunsetTime = ""
     @State private var moonPhase = ""
     @State private var itEvents: String = ""
+    @State private var wikiEvents: String = ""
     @State private var currentDate = Date()
     @State private var showingDatePicker = false
     @Binding var mainDate: Date
@@ -142,8 +143,13 @@ struct FrontSideView: View {
             }
                
             ScrollView {
-                Text(itEvents)
-                    .padding()
+                if selectedButton == .gpt {
+                       Text(itEvents)
+                           .padding()
+                   } else if selectedButton == .wiki {
+                       Text(wikiEvents)
+                           .padding()
+                   }
             }
             .frame(maxHeight: .infinity) // Set a maximum height for the scroll view
             Spacer()
@@ -265,6 +271,10 @@ struct FrontSideView: View {
         
         fetchOpenAIResponse(cdate: currentDate) { eventsText in
             itEvents = eventsText
+        }
+        
+        getWikipediaEvents(forDate: currentDate) { wikiText in
+            wikiEvents = wikiText
         }
         // Update your view based on the new date
         // For example, recalculate sunrise and sunset times

@@ -16,6 +16,8 @@ let package = Package(
         .iOSApplication(
             name: "CatCalendar",
             targets: ["AppModule"],
+            bundleIdentifier: "catcal",
+            teamIdentifier: "PX8DYSY5X5",
             displayVersion: "1.0",
             bundleVersion: "1",
             appIcon: .placeholder(icon: .calendar),
@@ -59,9 +61,15 @@ let package = Package(
             ]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/scinfu/SwiftSoup", "2.7.0"..<"3.0.0")
+    ],
     targets: [
         .executableTarget(
             name: "AppModule",
+            dependencies: [
+                .product(name: "SwiftSoup", package: "SwiftSoup")
+            ],
             path: ".",
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
