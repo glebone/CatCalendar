@@ -9,6 +9,10 @@ import SwiftUI
 import WeatherKit
 import CoreLocation
 
+enum SelectedButton {
+    case gpt, wiki, diary
+}
+
 struct ContentView: View {
     
     @State private var isFlipped = false
@@ -46,6 +50,7 @@ struct FrontSideView: View {
     @State private var currentDate = Date()
     @State private var showingDatePicker = false
     @Binding var mainDate: Date
+    @State private var selectedButton: SelectedButton = .gpt
     
     
     var body: some View {
@@ -142,6 +147,31 @@ struct FrontSideView: View {
             }
             .frame(maxHeight: .infinity) // Set a maximum height for the scroll view
             Spacer()
+             
+             HStack {
+                 // GPT Button
+                 Button("GPT") {
+                     selectedButton = .gpt
+                 }
+                 .buttonStyle(SelectableButtonStyle(isSelected: selectedButton == .gpt))
+                 
+                 Spacer()
+                 
+                 // Wiki Button
+                 Button("Wiki") {
+                     selectedButton = .wiki
+                 }
+                 .buttonStyle(SelectableButtonStyle(isSelected: selectedButton == .wiki))
+                 
+                 Spacer()
+                 
+                 // Diary Button
+                 Button("Diary") {
+                     selectedButton = .diary
+                 }
+                 .buttonStyle(SelectableButtonStyle(isSelected: selectedButton == .diary))
+             }
+             .padding()
             
         }
         
@@ -266,7 +296,17 @@ struct FrontSideView: View {
     
 }
 
-
+struct SelectableButtonStyle: ButtonStyle {
+    var isSelected: Bool
+    
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(isSelected ? Color.blue : Color.gray)
+            .foregroundColor(Color.white)
+            .cornerRadius(10)
+    }
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
