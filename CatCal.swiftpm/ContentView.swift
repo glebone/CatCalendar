@@ -48,6 +48,7 @@ struct FrontSideView: View {
     @State private var moonPhase = ""
     @State private var itEvents: String = ""
     @State private var wikiEvents: String = ""
+    @State private var diaryEvents: String = ""
     @State private var currentDate = Date()
     @State private var showingDatePicker = false
     @Binding var mainDate: Date
@@ -276,6 +277,11 @@ struct FrontSideView: View {
         getWikipediaEvents(forDate: currentDate) { wikiText in
             wikiEvents = wikiText
         }
+        
+        diaryEvents = findNearestEntries(for: currentDate, numberOfRecords: 11)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(diaryEvents)
+        
         // Update your view based on the new date
         // For example, recalculate sunrise and sunset times
     }

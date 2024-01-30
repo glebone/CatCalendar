@@ -56,7 +56,7 @@ func getWikipediaEvents(forDate date: Date, completion: @escaping (String) -> Vo
                 let latest20Events = sortedEvents.prefix(20)
 
                 // Concatenating events into a single string with new lines
-                let eventsString = latest20Events.map { "\($0.key): \($0.value)" }.joined(separator: "\n")
+                let eventsString = latest20Events.map { "\($0.value)" }.joined(separator: "\n")
                 completion(eventsString)
             }
         } catch {

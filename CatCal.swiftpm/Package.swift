@@ -71,6 +71,9 @@ let package = Package(
                 .product(name: "SwiftSoup", package: "SwiftSoup")
             ],
             path: ".",
+            resources: [
+                .process("Resources")
+            ],
             swiftSettings: [
                 .enableUpcomingFeature("BareSlashRegexLiterals")
             ]
