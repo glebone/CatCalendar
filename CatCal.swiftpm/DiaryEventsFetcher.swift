@@ -17,38 +17,32 @@ func findNearestEntries(for date: Date, numberOfRecords n: Int) -> String {
           let entries = try? JSONDecoder().decode([DiaryEntry].self, from: data) else {
         return "Failed to load diary entries."
     }
-    
+
     let calendar = Calendar.current
     let givenDay = calendar.component(.day, from: date)
-    
-    var dayEntries: [(DiaryEntry, Int)] = entries.compactMap { entry in
-        guard let entryDate = entry.date() else { return nil }
-        let dayDifference = abs(calendar.component(.day, from: entryDate) - givenDay)
-        return (entry, dayDifference)
-    }
-    
-    dayEntries.sort {
-        if $0.1 != $1.1 { 
-            return $0.1 < $1.1 // First, sort by the day difference
-        } else {
-            // If the day difference is the same, sort by year in descending order
-            return calendar.component(.year, from: $0.0.date()!) > calendar.component(.year, from: $1.0.date()!)
+    let givenMonth = calendar.component(.month, from: date)
+
+    var dayRange = 2
+    var nearestEntries: [DiaryEntry] = []
+
+    while nearestEntries.count < n {
+        nearestEntries = entries.filter { entry in
+            guard let entryDate = entry.date() else { return false }
+            let dayDifference = abs(calendar.component(.day, from: entryDate) - givenDay)
+            return calendar.component(.month, from: entryDate) == givenMonth && dayDifference <= dayRange
         }
+        .sorted {
+            calendar.component(.year, from: $0.date()!) < calendar.component(.year, from: $1.date()!)
+        }
+
+        if nearestEntries.count >= n || dayRange > 15 { // Avoid infinite loop
+            break
+        }
+
+        dayRange += 1 // Expand the day range if not enough entries are found
     }
-    
-    let nearestEntries = dayEntries.prefix(n).map { $0.0 }
-    
-    return nearestEntries.map { "\($0.adate): \($0.atext)" }.joined(separator: "\n")
+
+    let entriesText = nearestEntries.prefix(n).map { "\($0.adate): \($0.atext)" }.joined(separator: "\n\n")
+    return entriesText.isEmpty ? "No matching entries found." : entriesText
 }
 
-
-
-
-
-
-
-
-// Usage example
-/*let exampleDate = Date() // Replace with any Date object
-let nearestDiaryTexts = findNearestEntries(for: exampleDate, numberOfRecords: 3)
-print(nearestDiaryTexts)*/

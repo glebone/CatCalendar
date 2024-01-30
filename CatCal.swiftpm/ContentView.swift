@@ -150,6 +150,9 @@ struct FrontSideView: View {
                    } else if selectedButton == .wiki {
                        Text(wikiEvents)
                            .padding()
+                   } else if selectedButton == .diary {
+                       Text(diaryEvents)
+                           .padding()
                    }
             }
             .frame(maxHeight: .infinity) // Set a maximum height for the scroll view
@@ -278,7 +281,7 @@ struct FrontSideView: View {
             wikiEvents = wikiText
         }
         
-        diaryEvents = findNearestEntries(for: currentDate, numberOfRecords: 11)
+        diaryEvents = findNearestEntries(for: currentDate, numberOfRecords: 5)
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         print(diaryEvents)
         
